@@ -1,0 +1,5 @@
+print("Please answer a few question:")
+height = input("Your height (cm): ")
+weight = input("Your weight (kg): ")
+age = input("Your age (years): ")
+gender = input("What gender are you (male, female)? ")
