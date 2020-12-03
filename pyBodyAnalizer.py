@@ -12,6 +12,10 @@ print("5 - Every day")
 print("6 - Every day is intense")
 print("7 - Heavy physical work")
 physical = float(input("Your physical activity: "))
+print("What is your goal?")
+print("1 - Lose weight")
+print("2 - To gain weight")
+target = int(input("Your goal: "))
 
 
 def check_data():
@@ -64,12 +68,31 @@ def female_count():
            + get_female_muffin_geore() * 1.1 * get_coefficient()
 
 
+def get_imt():
+    return weight / ((height/100) * (height/100))
+
+
 if check_data():
     if gender == "male":
         print("You daily rate of kcal: " "%.0f" % male_count())
+        if target == 1:
+            print("Your maximum value kcal per day: " "%.0f" % float(male_count() * 0.8))
     elif gender == "female":
         print("You daily rate of kcal: " "%.0f" % female_count())
+        if target == 1:
+            print("Your maximum value kcal per day: " "%.0f" % float(female_count() * 0.8))
+    print("Your body mass index: " "%.0f" % get_imt())
+    if get_imt() < 15:
+        print("You have an acute shortage of weight")
+    elif 15 <= get_imt() <= 19:
+        print("You have an shortage of weight")
+    elif 20 <= get_imt() <= 24:
+        print("You have a normal weight")
+    elif 25 <= get_imt() <= 29:
+        print("You have an overweight")
+    elif 30 <= get_imt():
+        print("You have an obesity")
 else:
-    print("Ошибка введенных данных!")
+    print("Error in entering data! Please try again.")
 
 input()
