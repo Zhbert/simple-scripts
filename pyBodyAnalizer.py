@@ -23,6 +23,7 @@ def check_data():
             and type(weight) == float \
             and type(age) == float \
             and type(physical) == float \
+            and type(target) == int \
             and gender == "male" or gender == "female":
         return True
     else:
@@ -69,29 +70,79 @@ def female_count():
 
 
 def get_imt():
-    return weight / ((height/100) * (height/100))
+    return weight / ((height / 100) * (height / 100))
+
+
+def view_state_of_body():
+    if get_imt() < 15:
+        return "You have an acute shortage of weight"
+    elif 15 <= get_imt() <= 19:
+        return "You have an shortage of weight"
+    elif 20 <= get_imt() <= 24:
+        return "You have a normal weight"
+    elif 25 <= get_imt() <= 29:
+        return "You have an overweight"
+    elif 30 <= get_imt():
+        return "You have an obesity"
+
+
+def get_male_ideal_weight():
+    def get_male_broke():
+        return (height - 100) * 1.15
+
+    def get_male_hamvi():
+        return 48 + 2.7 * (0.393701 * height - 60)
+
+    def get_male_devin():
+        return 50 + 2.3 * (0.393701 * height - 60)
+
+    return (get_male_devin() + get_male_hamvi() + get_male_broke()) / 3
+
+
+def get_female_ideal_weight():
+    def get_female_broke():
+        return (height - 110) * 1.15
+
+    def get_female_hamvi():
+        return 45.5 + 2.2 * (0.393701 * height - 60)
+
+    def get_female_devin():
+        return 45.5 + 2.3 * (0.393701 * height - 60)
+
+    return (get_female_devin() + get_female_broke() + get_female_hamvi()) / 3
+
+
+def print_male_info():
+    print("You daily rate of kcal: " "%.0f" % male_count())
+    if target == 1:
+        print("Your maximum value kcal per day: " "%.0f" % float(male_count() * 0.8))
+    print("Your body mass index: " "%.0f" % get_imt())
+    print(view_state_of_body())
+    print("You ideal weight is " "%.0f" % get_male_ideal_weight())
+    if weight < get_male_ideal_weight():
+        print("You need to gain " "%.0f" % float(get_male_ideal_weight() - weight) + " kg")
+    else:
+        print("You need to lose " "%.0f" % float(weight - get_male_ideal_weight()) + " kg")
+
+
+def print_female_info():
+    print("You daily rate of kcal: " "%.0f" % female_count())
+    if target == 1:
+        print("Your maximum value kcal per day: " "%.0f" % float(female_count() * 0.8))
+    print("Your body mass index: " "%.0f" % get_imt())
+    print(view_state_of_body())
+    print("You ideal weight is " "%.0f" % get_female_ideal_weight())
+    if weight < get_female_ideal_weight():
+        print("You need to gain " "%.0f" % float(get_female_ideal_weight() - weight) + " kg")
+    else:
+        print("You need to lose " "%.0f" % float(weight - get_female_ideal_weight()) + " kg")
 
 
 if check_data():
     if gender == "male":
-        print("You daily rate of kcal: " "%.0f" % male_count())
-        if target == 1:
-            print("Your maximum value kcal per day: " "%.0f" % float(male_count() * 0.8))
+        print_male_info()
     elif gender == "female":
-        print("You daily rate of kcal: " "%.0f" % female_count())
-        if target == 1:
-            print("Your maximum value kcal per day: " "%.0f" % float(female_count() * 0.8))
-    print("Your body mass index: " "%.0f" % get_imt())
-    if get_imt() < 15:
-        print("You have an acute shortage of weight")
-    elif 15 <= get_imt() <= 19:
-        print("You have an shortage of weight")
-    elif 20 <= get_imt() <= 24:
-        print("You have a normal weight")
-    elif 25 <= get_imt() <= 29:
-        print("You have an overweight")
-    elif 30 <= get_imt():
-        print("You have an obesity")
+        print_female_info()
 else:
     print("Error in entering data! Please try again.")
 
