@@ -1,3 +1,7 @@
+#  Copyright (c) 2020.
+#  Created by Zhbert.
+#   Licensed by GPLv3.
+
 print("Please answer a few question:")
 height = float(input("Your height (cm): "))
 weight = float(input("Your weight (kg): "))
