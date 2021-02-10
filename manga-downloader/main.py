@@ -4,15 +4,27 @@
 
 from bs4 import BeautifulSoup
 import requests as req
+import os
+
+
+def clean_name(text):
+    bad_chars = [';', ':', '!', "*", "#", '%', '&', '{', '}', '\\', '<', '>', '?', '/', '$', '\'', '"', '@', '+', '|',
+                 '=']
+    for i in bad_chars:
+        text = text.replace(i, '')
+    return text
 
 
 def get_chapter_links(url):
     resp = req.get(url)
     soup = BeautifulSoup(resp.text, 'lxml')
+    folderName = clean_name(soup.find('span', class_='name').text)
+    os.mkdir(folderName)
+    os.chdir(folderName)
     hrefs = soup.find('table', class_='table table-hover').find_all('a')
-    file = open('links.txt', 'w')
+    file = open('chaptesLinks.txt', 'w')
     for href in hrefs:
-        file.write(href.get('href') + '\n')
+        file.write('https://mintmanga.live' + href.get('href') + 'mtr=1' + '\n')
     file.close()
 
 
