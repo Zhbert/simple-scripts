@@ -8,6 +8,8 @@ from selenium.webdriver.chrome.options import Options
 import requests as req
 import os
 import time
+import subprocess
+import shlex
 
 from selenium.webdriver.support.select import Select
 
@@ -21,8 +23,16 @@ def scan_chapter(link):
     option = select.first_selected_option
     print('Creating folder: ' + option.text)
     os.mkdir(option.text)
+    os.chdir(option.text)
+    print('Folder created')
+    count = browser.find_element_by_class_name('pages-count').text
+    for counter in range(int(count)):
+        print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
+        imgUrl = browser.find_element_by_id('mangaPicture').get_attribute('src')
+        cmd = 'wget' + ' -O ' + str(counter) + '.png ' + imgUrl
+        subprocess.call(shlex.split(cmd))
+        time.sleep(5)
     browser.quit()
-    print('Folder created. Timeout...')
     time.sleep(5)
 
 
