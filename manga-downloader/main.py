@@ -2,15 +2,14 @@
 #  Created by Zhbert.
 #  Licensed by GPLv3.
 
+import os
+import time
+import urllib.request
+
+import requests as req
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-import requests as req
-import os
-import time
-import subprocess
-import shlex
-
 from selenium.webdriver.support.select import Select
 
 
@@ -29,11 +28,11 @@ def scan_chapter(link):
     for counter in range(int(count)):
         print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
         imgUrl = browser.find_element_by_id('mangaPicture').get_attribute('src')
-        cmd = 'wget' + ' -O ' + str(counter) + '.png ' + imgUrl
-        subprocess.call(shlex.split(cmd))
+        urllib.request.urlretrieve(imgUrl, str(counter))
+        browser.find_element_by_class_name('fa-arrow-right').click()
         time.sleep(5)
     browser.quit()
-    time.sleep(5)
+    os.chdir('..')
 
 
 def clean_name(text):
