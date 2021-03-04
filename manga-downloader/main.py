@@ -16,6 +16,7 @@ from selenium.webdriver.support.select import Select
 def scan_chapter(link):
     chrome_options = Options()
     chrome_options.add_argument('--headless')
+    chrome_options.add_argument("--remote-debugging-port=9222")
     browser = webdriver.Chrome(options=chrome_options)
     browser.get(link)
     select = Select(browser.find_element_by_id('chapterSelectorSelect'))
