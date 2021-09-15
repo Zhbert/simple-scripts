@@ -51,7 +51,7 @@ def get_chapter_links(url):
     browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
     browser.get(url)
     folder_name = browser.find_element_by_class_name('name').text
-    print(folder_name)
+    print('Download manga: ' + folder_name)
     if os.path.exists(folder_name):
         os.chdir(folder_name)
     else:
