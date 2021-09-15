@@ -6,7 +6,6 @@ import os
 import time
 import urllib.request
 
-import requests as req
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -16,7 +15,6 @@ from selenium.webdriver.support.select import Select
 def scan_chapter(link):
     chrome_options = Options()
     chrome_options.add_argument('--headless')
-    chrome_options.add_argument("--remote-debugging-port=9222")
     browser = webdriver.Chrome(options=chrome_options)
     browser.get(link)
     select = Select(browser.find_element_by_id('chapterSelectorSelect'))
@@ -31,8 +29,8 @@ def scan_chapter(link):
         count = browser.find_element_by_class_name('pages-count').text
         for counter in range(int(count)):
             print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
-            imgUrl = browser.find_element_by_id('mangaPicture').get_attribute('src')
-            urllib.request.urlretrieve(imgUrl, str(counter))
+            img_url = browser.find_element_by_id('mangaPicture').get_attribute('src')
+            urllib.request.urlretrieve(img_url, str(counter))
             browser.find_element_by_class_name('fa-arrow-right').click()
             time.sleep(5)
         browser.quit()
@@ -48,14 +46,19 @@ def clean_name(text):
 
 
 def get_chapter_links(url):
-    resp = req.get(url)
-    soup = BeautifulSoup(resp.text, 'lxml')
-    folderName = clean_name(soup.find('span', class_='name').text)
-    if os.path.exists(folderName):
-        os.chdir(folderName)
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
+    browser.get(url)
+    folder_name = browser.find_element_by_class_name('name').text
+    print(folder_name)
+    if os.path.exists(folder_name):
+        os.chdir(folder_name)
     else:
-        os.mkdir(folderName)
-        os.chdir(folderName)
+        os.mkdir(folder_name)
+        os.chdir(folder_name)
+    html = browser.page_source
+    soup = BeautifulSoup(html, "lxml")
     hrefs = soup.find('table', class_='table table-hover').find_all('a')
     if os.path.exists('chaptesLinks.txt'):
         os.remove('chaptesLinks.txt')
@@ -66,6 +69,7 @@ def get_chapter_links(url):
         if rate == 0:
             file.write('https://mintmanga.live' + href.get('href') + '\n')
     file.close()
+    browser.quit()
 
 
 if __name__ == '__main__':
