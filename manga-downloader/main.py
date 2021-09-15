@@ -3,6 +3,7 @@
 #  Licensed by GPLv3.
 
 import os
+import re
 import time
 import urllib.request
 
@@ -20,7 +21,18 @@ def scan_chapter(link):
     select = Select(browser.find_element_by_id('chapterSelectorSelect'))
     option = select.first_selected_option
     if os.path.exists(option.text):
-        print("Skip chapter: " + option.text)
+        print("The chapter exists: " + option.text)
+        print("Checking the content...")
+        os.chdir(option.text)
+        count = browser.find_element_by_class_name('pages-count').text
+        for counter in range(int(count)):
+            print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
+            img_url = browser.find_element_by_id('mangaPicture').get_attribute('src')
+            urllib.request.urlretrieve(img_url, str(counter))
+            browser.find_element_by_class_name('fa-arrow-right').click()
+            time.sleep(5)
+        browser.quit()
+        os.chdir('..')
     else:
         print('Creating folder: ' + option.text)
         os.mkdir(option.text)
@@ -30,7 +42,10 @@ def scan_chapter(link):
         for counter in range(int(count)):
             print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
             img_url = browser.find_element_by_id('mangaPicture').get_attribute('src')
-            urllib.request.urlretrieve(img_url, str(counter))
+            rx = re.compile('\.[a-z]+\?')
+            match_ext = rx.search(img_url)
+            ext = match_ext.group()[:-1]
+            urllib.request.urlretrieve(img_url, str(counter) + ext)
             browser.find_element_by_class_name('fa-arrow-right').click()
             time.sleep(5)
         browser.quit()
