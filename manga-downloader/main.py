@@ -60,15 +60,14 @@ def get_chapter_links(url):
     html = browser.page_source
     soup = BeautifulSoup(html, "lxml")
     hrefs = soup.find('table', class_='table table-hover').find_all('a')
-    if os.path.exists('chaptesLinks.txt'):
-        os.remove('chaptesLinks.txt')
-    file = open('chaptesLinks.txt', 'w')
+    links = []
     for href in hrefs:
         if rate == 1:
-            file.write('https://mintmanga.live' + href.get('href') + '?mtr=1' + '\n')
+            links.append('https://mintmanga.live' + href.get('href') + '?mtr=1')
         if rate == 0:
-            file.write('https://mintmanga.live' + href.get('href') + '\n')
-    file.close()
+            links.append('https://mintmanga.live' + href.get('href'))
+    for link in links:
+        scan_chapter(link)
     browser.quit()
 
 
@@ -76,9 +75,3 @@ if __name__ == '__main__':
     mainLink = input("Enter the main link of manga page: ")
     rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
     get_chapter_links(mainLink)
-    if os.path.exists('chaptesLinks.txt'):
-        num_lines = sum(1 for line in open('chaptesLinks.txt'))
-        with open('chaptesLinks.txt') as file:
-            lines = file.readlines()
-        for line in lines:
-            scan_chapter(line)
