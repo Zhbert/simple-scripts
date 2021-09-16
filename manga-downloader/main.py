@@ -4,8 +4,8 @@
 
 import os
 import re
-import time
 import urllib.request
+import time
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -14,9 +14,6 @@ from selenium.webdriver.support.select import Select
 
 
 def scan_chapter(link):
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
-    browser = webdriver.Chrome(options=chrome_options)
     browser.get(link)
     select = Select(browser.find_element_by_id('chapterSelectorSelect'))
     option = select.first_selected_option
@@ -36,7 +33,6 @@ def scan_chapter(link):
             else:
                 urllib.request.urlretrieve(img_url, str(counter) + ext)
             browser.find_element_by_class_name('fa-arrow-right').click()
-        browser.quit()
         os.chdir('..')
     else:
         print('Creating folder: ' + option.text)
@@ -51,7 +47,6 @@ def scan_chapter(link):
             ext = match_ext.group()[:-1]
             urllib.request.urlretrieve(img_url, str(counter) + ext)
             browser.find_element_by_class_name('fa-arrow-right').click()
-        browser.quit()
         os.chdir('..')
 
 
@@ -64,11 +59,8 @@ def clean_name(text):
 
 
 def get_chapter_links(url):
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
-    browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
     browser.get(url)
-    folder_name = browser.find_element_by_class_name('name').text
+    folder_name = clean_name(browser.find_element_by_class_name('name').text)
     print('Download manga: ' + folder_name)
     if os.path.exists(folder_name):
         os.chdir(folder_name)
@@ -90,6 +82,10 @@ def get_chapter_links(url):
 
 
 if __name__ == '__main__':
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
     mainLink = input("Enter the main link of manga page: ")
     rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
     get_chapter_links(mainLink)
+    browser.quit()
