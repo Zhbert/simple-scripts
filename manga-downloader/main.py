@@ -42,7 +42,7 @@ def scan_chapter(link):
         for counter in range(int(count)):
             print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
             img_url = browser.find_element_by_id('mangaPicture').get_attribute('src')
-            rx = re.compile('\.[a-z]+\?')
+            rx = re.compile('\.[a-zA-Z]+\?')
             match_ext = rx.search(img_url)
             ext = match_ext.group()[:-1]
             urllib.request.urlretrieve(img_url, str(counter) + ext)
