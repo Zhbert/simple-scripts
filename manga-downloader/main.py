@@ -11,6 +11,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 
+main_path = ""
+cbz_path = ""
+
 
 def scan_chapter(link):
     browser.get(link)
@@ -58,8 +61,12 @@ def clean_name(text):
 
 
 def get_chapter_links(url):
+    global main_path
+    global cbz_path
     browser.get(url)
     folder_name = clean_name(browser.find_element_by_class_name('name').text)
+    main_path = os.path.abspath(os.curdir) + os.sep + folder_name
+    cbz_path = os.path.abspath(os.curdir) + os.sep + folder_name + '_CBZ'
     print('Download manga: ' + folder_name)
     if os.path.exists(folder_name):
         os.chdir(folder_name)
