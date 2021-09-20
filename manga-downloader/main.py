@@ -5,6 +5,7 @@
 import os
 import re
 import urllib.request
+import zipfile
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -90,7 +91,21 @@ def get_chapter_links(url):
 def cbz_pack():
     global main_path
     global cbz_path
+
     os.chdir(main_path)
+    if not os.path.exists(cbz_path):
+        os.mkdir(cbz_path)
+    paths_tree = os.listdir(main_path)
+    for path in paths_tree:
+        os.chdir(main_path + os.sep + path)
+        zip_archive = zipfile.ZipFile(cbz_path + os.sep + path + '.zip', mode='w')
+        files_tree = os.listdir(os.curdir)
+        for file in files_tree:
+            zip_archive.write(file)
+        zip_archive.close()
+        os.rename(cbz_path + os.sep + path + '.zip', cbz_path + os.sep + path + '.cbz')
+        os.chdir('..')
+
 
 
 if __name__ == '__main__':
