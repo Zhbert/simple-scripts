@@ -87,6 +87,12 @@ def get_chapter_links(url):
     browser.quit()
 
 
+def cbz_pack():
+    global main_path
+    global cbz_path
+    os.chdir(main_path)
+
+
 if __name__ == '__main__':
     chrome_options = Options()
     chrome_options.add_argument('--headless')
@@ -94,4 +100,5 @@ if __name__ == '__main__':
     mainLink = input("Enter the main link of manga page: ")
     rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
     get_chapter_links(mainLink)
+    cbz_pack()
     browser.quit()
