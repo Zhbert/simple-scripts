@@ -108,6 +108,13 @@ def cbz_pack():
 
 
 if __name__ == '__main__':
+    if not os.path.exists('LIBRARY'):
+        os.mkdir('LIBRARY')
+    os.chdir('LIBRARY')
+    if not os.path.exists('PIC'):
+        os.mkdir('PIC')
+    if not os.path.exists('CBZ'):
+        os.mkdir('CBZ')
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
