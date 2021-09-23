@@ -107,7 +107,6 @@ def cbz_pack():
         os.chdir('..')
 
 
-
 if __name__ == '__main__':
     chrome_options = Options()
     chrome_options.add_argument('--headless')
