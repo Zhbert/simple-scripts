@@ -91,7 +91,6 @@ def get_chapter_links(url):
 def cbz_pack():
     global main_path
     global cbz_path
-
     os.chdir(main_path)
     if not os.path.exists(cbz_path):
         os.mkdir(cbz_path)
@@ -115,6 +114,7 @@ if __name__ == '__main__':
         os.mkdir('PIC')
     if not os.path.exists('CBZ'):
         os.mkdir('CBZ')
+    os.chdir('..')
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
