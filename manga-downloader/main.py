@@ -66,14 +66,14 @@ def get_chapter_links(url):
     global cbz_path
     browser.get(url)
     folder_name = clean_name(browser.find_element_by_class_name('name').text)
-    main_path = os.path.abspath(os.curdir) + os.sep + folder_name
-    cbz_path = os.path.abspath(os.curdir) + os.sep + folder_name + '_CBZ'
+    main_path = os.path.abspath(os.curdir) + os.sep + 'LIBRARY' + os.sep + 'PIC' + os.sep + folder_name
+    cbz_path = os.path.abspath(os.curdir) + os.sep + 'LIBRARY' + os.sep + 'CBZ' + os.sep + folder_name
     print('Download manga: ' + folder_name)
-    if os.path.exists(folder_name):
-        os.chdir(folder_name)
+    if os.path.exists(main_path):
+        os.chdir(main_path)
     else:
-        os.mkdir(folder_name)
-        os.chdir(folder_name)
+        os.mkdir(main_path)
+        os.chdir(main_path)
     html = browser.page_source
     soup = BeautifulSoup(html, "lxml")
     hrefs = soup.find('table', class_='table table-hover').find_all('a')
