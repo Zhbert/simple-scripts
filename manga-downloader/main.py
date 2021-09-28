@@ -4,6 +4,7 @@
 
 import os
 import re
+import sys
 import urllib.request
 import zipfile
 
@@ -14,6 +15,8 @@ from selenium.webdriver.support.select import Select
 
 main_path = ""
 cbz_path = ""
+mainLink = ""
+rate = 0
 
 
 def scan_chapter(link):
@@ -118,8 +121,12 @@ if __name__ == '__main__':
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
-    mainLink = input("Enter the main link of manga page: ")
-    rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
+    if len(sys.argv) > 1:
+        mainLink = sys.argv[1]
+        rate = int(sys.argv[2])
+    else:
+        mainLink = input("Enter the main link of manga page: ")
+        rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
     get_chapter_links(mainLink)
     cbz_pack()
     browser.quit()
