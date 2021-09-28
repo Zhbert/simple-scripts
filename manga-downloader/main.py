@@ -110,6 +110,7 @@ def cbz_pack():
 
 
 if __name__ == '__main__':
+    rate = 0
     if not os.path.exists('LIBRARY'):
         os.mkdir('LIBRARY')
     os.chdir('LIBRARY')
@@ -122,11 +123,22 @@ if __name__ == '__main__':
     chrome_options.add_argument('--headless')
     browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
     if len(sys.argv) > 1:
-        mainLink = sys.argv[1]
-        rate = int(sys.argv[2])
+        if sys.argv[1].find("https://mintmanga.live") != -1:
+            mainLink = sys.argv[1]
+        else:
+            print('Error in the link!')
+        if sys.argv[2].isnumeric():
+            if int(sys.argv[2]) == 1:
+                rate = int(sys.argv[2])
+            else:
+                print('Invalid rating value!')
+        else:
+            print('Invalid rating value')
     else:
         mainLink = input("Enter the main link of manga page: ")
         rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
+    print(rate)
+    print(mainLink)
     get_chapter_links(mainLink)
     cbz_pack()
     browser.quit()
