@@ -137,8 +137,6 @@ if __name__ == '__main__':
     else:
         mainLink = input("Enter the main link of manga page: ")
         rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
-    print(rate)
-    print(mainLink)
     get_chapter_links(mainLink)
     cbz_pack()
     browser.quit()
