@@ -127,13 +127,16 @@ if __name__ == '__main__':
             mainLink = sys.argv[1]
         else:
             print('Error in the link!')
+            sys.exit()
         if sys.argv[2].isnumeric():
             if int(sys.argv[2]) == 1:
                 rate = int(sys.argv[2])
             else:
                 print('Invalid rating value!')
+                sys.exit()
         else:
             print('Invalid rating value')
+            sys.exit()
     else:
         mainLink = input("Enter the main link of manga page: ")
         rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
