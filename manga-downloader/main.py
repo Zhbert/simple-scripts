@@ -7,13 +7,18 @@ import re
 import sys
 import urllib.request
 import zipfile
+import warnings
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 
+
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 main_path = ""
+original_path = ""
 cbz_path = ""
 mainLink = ""
 rate = 0
@@ -88,7 +93,7 @@ def get_chapter_links(url):
             links.append('https://mintmanga.live' + href.get('href'))
     for link in links:
         scan_chapter(link)
-    browser.quit()
+    os.chdir('..')
 
 
 def cbz_pack():
@@ -111,6 +116,7 @@ def cbz_pack():
 
 if __name__ == '__main__':
     rate = 0
+    original_path = os.path.abspath(os.curdir)
     if not os.path.exists('LIBRARY'):
         os.mkdir('LIBRARY')
     os.chdir('LIBRARY')
@@ -126,20 +132,35 @@ if __name__ == '__main__':
         if sys.argv[1].find("https://mintmanga.live") != -1:
             mainLink = sys.argv[1]
         else:
-            print('Error in the link!')
+            with open(sys.argv[1]) as file:
+                lines = file.readlines()
+                count = 0
+                for line in lines:
+                    os.chdir(original_path)
+                    params = line.split()
+                    mainLink = params[0]
+                    rate = int(params[1])
+                    get_chapter_links(mainLink)
+                    cbz_pack()
+                print("All done. Enjoy!")
             sys.exit()
-        if sys.argv[2].isnumeric():
-            if int(sys.argv[2]) == 1:
-                rate = int(sys.argv[2])
+        if len(sys.argv) > 2:
+            if sys.argv[2].isnumeric():
+                if int(sys.argv[2]) == 1:
+                    rate = int(sys.argv[2])
+                else:
+                    print('Invalid rating value!')
+                    sys.exit()
             else:
-                print('Invalid rating value!')
+                print('Invalid rating value')
                 sys.exit()
         else:
-            print('Invalid rating value')
+            print("Error: rating is not specified!")
             sys.exit()
     else:
         mainLink = input("Enter the main link of manga page: ")
         rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
-    get_chapter_links(mainLink)
-    cbz_pack()
+        get_chapter_links(mainLink)
+        cbz_pack()
+        print("All done. Enjoy!")
     browser.quit()
