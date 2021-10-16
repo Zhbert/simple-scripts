@@ -14,7 +14,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 
-
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 main_path = ""
@@ -137,11 +136,12 @@ if __name__ == '__main__':
                 count = 0
                 for line in lines:
                     os.chdir(original_path)
-                    params = line.split()
-                    mainLink = params[0]
-                    rate = int(params[1])
-                    get_chapter_links(mainLink)
-                    cbz_pack()
+                    if re.match('^[\w:\/\.\-]+ \d', line):
+                        params = line.split()
+                        mainLink = params[0]
+                        rate = int(params[1])
+                        get_chapter_links(mainLink)
+                        cbz_pack()
                 print("All done. Enjoy!")
             sys.exit()
         if len(sys.argv) > 2:
