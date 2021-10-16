@@ -75,7 +75,9 @@ def get_chapter_links(url):
     folder_name = clean_name(browser.find_element_by_class_name('name').text)
     main_path = os.path.abspath(os.curdir) + os.sep + 'LIBRARY' + os.sep + 'PIC' + os.sep + folder_name
     cbz_path = os.path.abspath(os.curdir) + os.sep + 'LIBRARY' + os.sep + 'CBZ' + os.sep + folder_name
+    print('---------------')
     print('Download manga: ' + folder_name)
+    print('---------------')
     if os.path.exists(main_path):
         os.chdir(main_path)
     else:
