@@ -3,26 +3,47 @@
 #  Licensed by GPLv3.
 
 import os
-import time
+import re
+import sys
 import urllib.request
+import zipfile
+import warnings
 
-import requests as req
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
 
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+main_path = ""
+original_path = ""
+cbz_path = ""
+mainLink = ""
+rate = 0
+
 
 def scan_chapter(link):
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument("--remote-debugging-port=9222")
-    browser = webdriver.Chrome(options=chrome_options)
     browser.get(link)
     select = Select(browser.find_element_by_id('chapterSelectorSelect'))
     option = select.first_selected_option
+    rx = re.compile('\.[a-zA-Z]+\?')
     if os.path.exists(option.text):
-        print("Skip chapter: " + option.text)
+        print("The chapter exists: " + option.text)
+        print("Checking the content...")
+        os.chdir(option.text)
+        count = browser.find_element_by_class_name('pages-count').text
+        for counter in range(int(count)):
+            print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
+            img_url = browser.find_element_by_id('mangaPicture').get_attribute('src')
+            match_ext = rx.search(img_url)
+            ext = match_ext.group()[:-1]
+            if os.path.exists(str(counter + 1) + ext):
+                print("File exists. Next...")
+            else:
+                urllib.request.urlretrieve(img_url, str(counter) + ext)
+            browser.find_element_by_class_name('fa-arrow-right').click()
+        os.chdir('..')
     else:
         print('Creating folder: ' + option.text)
         os.mkdir(option.text)
@@ -31,11 +52,11 @@ def scan_chapter(link):
         count = browser.find_element_by_class_name('pages-count').text
         for counter in range(int(count)):
             print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
-            imgUrl = browser.find_element_by_id('mangaPicture').get_attribute('src')
-            urllib.request.urlretrieve(imgUrl, str(counter))
+            img_url = browser.find_element_by_id('mangaPicture').get_attribute('src')
+            match_ext = rx.search(img_url)
+            ext = match_ext.group()[:-1]
+            urllib.request.urlretrieve(img_url, str(counter) + ext)
             browser.find_element_by_class_name('fa-arrow-right').click()
-            time.sleep(5)
-        browser.quit()
         os.chdir('..')
 
 
@@ -48,33 +69,100 @@ def clean_name(text):
 
 
 def get_chapter_links(url):
-    resp = req.get(url)
-    soup = BeautifulSoup(resp.text, 'lxml')
-    folderName = clean_name(soup.find('span', class_='name').text)
-    if os.path.exists(folderName):
-        os.chdir(folderName)
+    global main_path
+    global cbz_path
+    browser.get(url)
+    folder_name = clean_name(browser.find_element_by_class_name('name').text)
+    main_path = os.path.abspath(os.curdir) + os.sep + 'LIBRARY' + os.sep + 'PIC' + os.sep + folder_name
+    cbz_path = os.path.abspath(os.curdir) + os.sep + 'LIBRARY' + os.sep + 'CBZ' + os.sep + folder_name
+    print('---------------')
+    print('Download manga: ' + folder_name)
+    print('---------------')
+    if os.path.exists(main_path):
+        os.chdir(main_path)
     else:
-        os.mkdir(folderName)
-        os.chdir(folderName)
+        os.mkdir(main_path)
+        os.chdir(main_path)
+    html = browser.page_source
+    soup = BeautifulSoup(html, "lxml")
     hrefs = soup.find('table', class_='table table-hover').find_all('a')
-    if os.path.exists('chaptesLinks.txt'):
-        os.remove('chaptesLinks.txt')
-    file = open('chaptesLinks.txt', 'w')
+    links = []
     for href in hrefs:
         if rate == 1:
-            file.write('https://mintmanga.live' + href.get('href') + '?mtr=1' + '\n')
+            links.append('https://mintmanga.live' + href.get('href') + '?mtr=1')
         if rate == 0:
-            file.write('https://mintmanga.live' + href.get('href') + '\n')
-    file.close()
+            links.append('https://mintmanga.live' + href.get('href'))
+    for link in links:
+        scan_chapter(link)
+    os.chdir('..')
+
+
+def cbz_pack():
+    global main_path
+    global cbz_path
+    os.chdir(main_path)
+    if not os.path.exists(cbz_path):
+        os.mkdir(cbz_path)
+    paths_tree = os.listdir(main_path)
+    for path in paths_tree:
+        os.chdir(main_path + os.sep + path)
+        zip_archive = zipfile.ZipFile(cbz_path + os.sep + path + '.zip', mode='w')
+        files_tree = os.listdir(os.curdir)
+        for file in files_tree:
+            zip_archive.write(file)
+        zip_archive.close()
+        os.rename(cbz_path + os.sep + path + '.zip', cbz_path + os.sep + path + '.cbz')
+        os.chdir('..')
 
 
 if __name__ == '__main__':
-    mainLink = input("Enter the main link of manga page: ")
-    rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
-    get_chapter_links(mainLink)
-    if os.path.exists('chaptesLinks.txt'):
-        num_lines = sum(1 for line in open('chaptesLinks.txt'))
-        with open('chaptesLinks.txt') as file:
-            lines = file.readlines()
-        for line in lines:
-            scan_chapter(line)
+    rate = 0
+    original_path = os.path.abspath(os.curdir)
+    if not os.path.exists('LIBRARY'):
+        os.mkdir('LIBRARY')
+    os.chdir('LIBRARY')
+    if not os.path.exists('PIC'):
+        os.mkdir('PIC')
+    if not os.path.exists('CBZ'):
+        os.mkdir('CBZ')
+    os.chdir('..')
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
+    if len(sys.argv) > 1:
+        if sys.argv[1].find("https://mintmanga.live") != -1:
+            mainLink = sys.argv[1]
+        else:
+            with open(sys.argv[1]) as file:
+                lines = file.readlines()
+                count = 0
+                for line in lines:
+                    os.chdir(original_path)
+                    if re.match('^[\w:\/\.\-]+ \d', line):
+                        params = line.split()
+                        mainLink = params[0]
+                        rate = int(params[1])
+                        get_chapter_links(mainLink)
+                        cbz_pack()
+                print("All done. Enjoy!")
+            sys.exit()
+        if len(sys.argv) > 2:
+            if sys.argv[2].isnumeric():
+                if int(sys.argv[2]) == 1:
+                    rate = int(sys.argv[2])
+                else:
+                    print('Invalid rating value!')
+                    sys.exit()
+            else:
+                print('Invalid rating value')
+                sys.exit()
+        else:
+            print("Error: rating is not specified!")
+            sys.exit()
+    else:
+        mainLink = input("Enter the main link of manga page: ")
+        rate = int(input("Enter the rate of manga (0 or 1 (where 1 is a 18+)): "))
+        get_chapter_links(mainLink)
+        cbz_pack()
+        print("All done. Enjoy!")
+    browser.quit()
