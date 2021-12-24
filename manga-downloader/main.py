@@ -17,6 +17,7 @@ from selenium.webdriver.support.select import Select
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 main_path = ""
+main_url = ""
 original_path = ""
 cbz_path = ""
 mainLink = ""
@@ -71,6 +72,12 @@ def clean_name(text):
 def get_chapter_links(url):
     global main_path
     global cbz_path
+    global main_url
+    if "https://mintmanga.live" in url:
+        main_url = "https://mintmanga.live";
+    if "https://readmanga.io" in url:
+        main_url = "https://readmanga.io"
+    print(url)
     browser.get(url)
     folder_name = clean_name(browser.find_element_by_class_name('name').text)
     main_path = os.path.abspath(os.curdir) + os.sep + 'LIBRARY' + os.sep + 'PIC' + os.sep + folder_name
@@ -89,9 +96,9 @@ def get_chapter_links(url):
     links = []
     for href in hrefs:
         if rate == 1:
-            links.append('https://mintmanga.live' + href.get('href') + '?mtr=1')
+            links.append(main_url + href.get('href') + '?mtr=1')
         if rate == 0:
-            links.append('https://mintmanga.live' + href.get('href'))
+            links.append(main_url + href.get('href'))
     for link in links:
         scan_chapter(link)
     os.chdir('..')
@@ -130,7 +137,7 @@ if __name__ == '__main__':
     chrome_options.add_argument('--headless')
     browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
     if len(sys.argv) > 1:
-        if sys.argv[1].find("https://mintmanga.live") != -1:
+        if "https://mintmanga.live" in sys.argv[1] or "https://readmanga.io" in sys.argv[1] != -1:
             mainLink = sys.argv[1]
         else:
             with open(sys.argv[1]) as file:
