@@ -33,6 +33,7 @@ def create_new_settings_file(settings_file):
     config.set("CHILD", "Surname", "NONE")
     config.set("CHILD", "Name", "NONE")
     config.set("CHILD", "Middle_name", "NONE")
+    config.set("CHILD", "Birthday", "DD.MM.YYYY")
     if os.path.exists(settings_file):
         with open(settings_file, "w") as config_file:
             config.write(config_file)
