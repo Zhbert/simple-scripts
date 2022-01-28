@@ -53,3 +53,27 @@ def get_home_path():
 
 def get_settings_file_path():
     return get_home_path() + os.sep + ".raufus_checker" + os.sep + "raufus_checker.conf"
+
+
+def get_surname():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("CHILD", "Surname")
+
+
+def get_name():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("CHILD", "Name")
+
+
+def get_middle_name():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("CHILD", "Middle_name")
+
+
+def get_birthday():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("CHILD", "Birthday")
