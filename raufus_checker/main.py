@@ -3,12 +3,12 @@
 #  Copyright (c) 2022.
 #  Created by Zhbert.
 #  Licensed by GPLv3.
+import time
 import warnings
 
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.select import Select
 
 from settings_file_service import *
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     check_settings_file()
     chrome_options = Options()
     chrome_options.add_argument("--disable-javascript")
-    #chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--headless')
     browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
     browser.get("https://rauhfus.ru/patsientam/zapis-na-priem")
     surname = get_surname()
@@ -31,11 +31,16 @@ if __name__ == '__main__':
     browser.find_element_by_id('patient-second-name').send_keys(middle_name)
     filed = browser.find_element_by_id('nav-record-tab')
     browser.find_element_by_id('patient-birthday').send_keys(birthday)
+    time.sleep(5)
     actionChains.move_to_element(filed).click().perform()
     browser.find_element_by_id('js-find-patient').click()
-    specializations = browser.find_elements_by_class_name('list-group-item list-group-item-action active')
-    print(specializations)
-    for s in specializations:
-        print(s.text)
-    #browser.quit()
-
+    time.sleep(5)
+    actionChains.move_to_element(browser.find_element_by_id('nav-record-tab')).click().perform()
+    time.sleep(5)
+    actionChains.move_to_element(browser.find_element_by_css_selector('div[data-i="5"]')).click().perform()
+    time.sleep(5)
+    try:
+        print(browser.find_element_by_class_name('alert').text)
+    except FileNotFoundError:
+        print("Есть номерки!")
+    # browser.quit()
