@@ -11,6 +11,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
 
 from settings_file_service import *
+from email_service import *
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -41,6 +42,7 @@ if __name__ == '__main__':
     time.sleep(5)
     try:
         print(browser.find_element_by_class_name('alert').text)
+        send_email('smtp.gmail.com', 587, 'Testing', 'from', 'to', 'Test!')
     except FileNotFoundError:
         print("Есть номерки!")
     # browser.quit()
