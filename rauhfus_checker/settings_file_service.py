@@ -9,8 +9,8 @@ import configparser
 
 
 def check_settings_file():
-    settings_path = get_home_path() + os.sep + ".raufus_checker"
-    settings_file = settings_path + os.sep + "raufus_checker.conf"
+    settings_path = get_home_path() + os.sep + ".rauhfus_checker"
+    settings_file = settings_path + os.sep + "rauhfus_checker.conf"
     if os.path.exists(settings_path):
         print("The settings directory was found. Checking the parameters file...")
         if os.path.exists(settings_file):
@@ -52,7 +52,7 @@ def get_home_path():
 
 
 def get_settings_file_path():
-    return get_home_path() + os.sep + ".raufus_checker" + os.sep + "raufus_checker.conf"
+    return get_home_path() + os.sep + ".rauhfus_checker" + os.sep + "rauhfus_checker.conf"
 
 
 def get_surname():
