@@ -34,6 +34,12 @@ def create_new_settings_file(settings_file):
     config.set("CHILD", "Name", "NONE")
     config.set("CHILD", "Middle_name", "NONE")
     config.set("CHILD", "Birthday", "DD.MM.YYYY")
+    config.add_section("EMAIL")
+    config.set("EMAIL", "Host", "smtp.gmail.com")
+    config.set("EMAIL", "Port", "587")
+    config.set("EMAIL", "Username", "USERNAME")
+    config.set("EMAIL", "Password", "PASSWORD")
+    config.set("EMAIL", "Address", "your@email.addr")
     if os.path.exists(settings_file):
         with open(settings_file, "w") as config_file:
             config.write(config_file)
@@ -77,3 +83,33 @@ def get_birthday():
     config = configparser.ConfigParser()
     config.read(get_settings_file_path())
     return config.get("CHILD", "Birthday")
+
+
+def get_email_host():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("EMAIL", "Host")
+
+
+def get_email_port():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("EMAIL", "Port")
+
+
+def get_email_username():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("EMAIL", "Username")
+
+
+def get_email_password():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("EMAIL", "Password")
+
+
+def get_email_address():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("EMAIL", "Address")

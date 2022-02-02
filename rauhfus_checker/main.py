@@ -19,7 +19,7 @@ if __name__ == '__main__':
     check_settings_file()
     chrome_options = Options()
     chrome_options.add_argument("--disable-javascript")
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
     browser.get("https://rauhfus.ru/patsientam/zapis-na-priem")
     surname = get_surname()
@@ -42,7 +42,9 @@ if __name__ == '__main__':
     time.sleep(5)
     try:
         print(browser.find_element_by_class_name('alert').text)
-        send_email('smtp.gmail.com', 587, 'Testing', 'from', 'to', 'Test!')
     except FileNotFoundError:
-        print("Есть номерки!")
-    # browser.quit()
+        send_email('Ticket to the doctor is available!',
+                   get_email_address(),
+                   get_email_address(),
+                   'You may to register!')
+    browser.quit()
