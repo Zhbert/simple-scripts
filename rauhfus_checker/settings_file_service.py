@@ -8,6 +8,11 @@ import os
 import configparser
 
 
+doctors_names = {
+    'Невролог': 5
+}
+
+
 def check_settings_file():
     settings_path = get_home_path() + os.sep + ".rauhfus_checker"
     settings_file = settings_path + os.sep + "rauhfus_checker.conf"
@@ -40,6 +45,8 @@ def create_new_settings_file(settings_file):
     config.set("EMAIL", "Username", "USERNAME")
     config.set("EMAIL", "Password", "PASSWORD")
     config.set("EMAIL", "Address", "your@email.addr")
+    config.add_section("DOCTOR")
+    config.set("DOCTOR", "Type", "Невролог")
     if os.path.exists(settings_file):
         with open(settings_file, "w") as config_file:
             config.write(config_file)
@@ -113,3 +120,13 @@ def get_email_address():
     config = configparser.ConfigParser()
     config.read(get_settings_file_path())
     return config.get("EMAIL", "Address")
+
+
+def get_doctor_name():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("DOCTOR", "Type")
+
+
+def get_doctor_type():
+    return doctors_names[get_doctor_name()]
