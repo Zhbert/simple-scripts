@@ -61,6 +61,8 @@ def create_new_settings_file(settings_file):
     config.set("EMAIL", "Address", "your@email.addr")
     config.add_section("DOCTOR")
     config.set("DOCTOR", "Type", "Невролог")
+    config.add_section("SYSTEM")
+    config.set("SYSTEM", "Interval", "3")
     if os.path.exists(settings_file):
         with open(settings_file, "w") as config_file:
             config.write(config_file)
@@ -144,3 +146,9 @@ def get_doctor_name():
 
 def get_doctor_type():
     return doctors_names[get_doctor_name()]
+
+
+def get_system_interval():
+    config = configparser.ConfigParser()
+    config.read(get_settings_file_path())
+    return config.get("SYSTEM", "Interval")
