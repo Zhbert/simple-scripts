@@ -42,7 +42,7 @@ if __name__ == '__main__':
     try:
         print(browser.find_element_by_class_name('alert').text)
     except FileNotFoundError:
-        send_email('Ticket to the doctor is available!',
+        send_email('Ticket to the ' + get_doctor_name() + 'doctor is available!',
                    get_email_address(),
                    get_email_address(),
                    'You may to register!')
