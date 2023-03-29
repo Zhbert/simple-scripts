@@ -16,6 +16,43 @@
 #  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 #  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #  OTHER DEALINGS IN THE SOFTWARE.
+import imaplib
+import os
+import email
 
+import chardet as chardet
 
+################################################################################
+# Config
+################################################################################
 
+config = {
+    # Email
+    'EMAIL': os.environ["USER_EMAIL"],
+    'PASSWD': os.environ["USER_PASSWD"],
+    'EMAIL_SERVER': os.environ["EMAIL_SERVER"],
+}
+
+################################################################################
+# Login to email server
+################################################################################
+
+mail = imaplib.IMAP4_SSL(config['EMAIL_SERVER'])
+mail.login(config['EMAIL'], config['PASSWD'])
+
+################################################################################
+# Search files from target sender
+################################################################################
+
+mail.select('INBOX')
+typ, data = mail.search(None, 'ALL')
+data = data[0].split()
+for i in data:
+    status, data = mail.fetch(i, '(RFC822)')
+    data = data[0][1]
+    enc = chardet.detect(data)
+
+    msg = email.message_from_bytes(data)
+    if msg['From'] == 'noreply@ofd.ru':
+        print(msg['Body'])
+mail.close()
