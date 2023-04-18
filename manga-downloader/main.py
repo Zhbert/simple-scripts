@@ -8,11 +8,13 @@ import sys
 import urllib.request
 import zipfile
 import warnings
+import time
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.common.by import By
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -22,42 +24,47 @@ original_path = ""
 cbz_path = ""
 mainLink = ""
 rate = 0
+username = ""
+password = ""
 
 
 def scan_chapter(link):
+    print(link)
     browser.get(link)
-    select = Select(browser.find_element_by_id('chapterSelectorSelect'))
-    option = select.first_selected_option
+    html = browser.page_source
+    soup = BeautifulSoup(html, "lxml")
+    option = soup.find('span', class_='text-cut')
+    print(option)
     rx = re.compile('\.[a-zA-Z]+\?')
     if os.path.exists(option.text):
         print("The chapter exists: " + option.text)
         print("Checking the content...")
         os.chdir(option.text)
-        count = browser.find_element_by_class_name('pages-count').text
+        count = browser.find_element(By.CLASS_NAME, "pages-count").text
         for counter in range(int(count)):
             print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
-            img_url = browser.find_element_by_id('mangaPicture').get_attribute('src')
+            img_url = browser.find_element(By.ID, "mangaPicture").get_attribute('src')
             match_ext = rx.search(img_url)
             ext = match_ext.group()[:-1]
             if os.path.exists(str(counter + 1) + ext):
                 print("File exists. Next...")
             else:
                 urllib.request.urlretrieve(img_url, str(counter) + ext)
-            browser.find_element_by_class_name('fa-arrow-right').click()
+            browser.find_element(By.CLASS_NAME, "fa-arrow-right").click()
         os.chdir('..')
     else:
         print('Creating folder: ' + option.text)
         os.mkdir(option.text)
         os.chdir(option.text)
         print('Folder created')
-        count = browser.find_element_by_class_name('pages-count').text
+        count = browser.find_element(By.CLASS_NAME, "pages-count").text
         for counter in range(int(count)):
             print('Downloading ' + str(counter + 1) + ' from ' + count + ' in ' + option.text)
-            img_url = browser.find_element_by_id('mangaPicture').get_attribute('src')
+            img_url = browser.find_element("id", "mangaPicture").get_attribute('src')
             match_ext = rx.search(img_url)
             ext = match_ext.group()[:-1]
             urllib.request.urlretrieve(img_url, str(counter) + ext)
-            browser.find_element_by_class_name('fa-arrow-right').click()
+            browser.find_element(By.CLASS_NAME, "fa-arrow-right").click()
         os.chdir('..')
 
 
@@ -73,13 +80,22 @@ def get_chapter_links(url):
     global main_path
     global cbz_path
     global main_url
+    global username
+    global password
+
     if "https://mintmanga.live" in url:
         main_url = "https://mintmanga.live";
     if "https://readmanga.io" in url:
         main_url = "https://readmanga.io"
     print(url)
+
+    browser.get("https://grouple.co/internal/auth/login")
+    browser.find_element(By.ID, "username").send_keys(username)
+    browser.find_element(By.ID, "password").send_keys(password)
+    browser.find_element(By.ID, "password").submit()
+
     browser.get(url)
-    folder_name = clean_name(browser.find_element_by_class_name('name').text)
+    folder_name = clean_name(browser.find_element(By.CLASS_NAME, "name").text)
     main_path = os.path.abspath(os.curdir) + os.sep + 'LIBRARY' + os.sep + 'PIC' + os.sep + folder_name
     cbz_path = os.path.abspath(os.curdir) + os.sep + 'LIBRARY' + os.sep + 'CBZ' + os.sep + folder_name
     print('---------------')
@@ -134,7 +150,10 @@ if __name__ == '__main__':
         os.mkdir('CBZ')
     os.chdir('..')
     chrome_options = Options()
-    chrome_options.add_argument('--headless')
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+    # chrome_options.add_argument('--headless')
     browser = webdriver.Chrome(options=chrome_options, executable_path="/home/zhbert/chromedriver")
     if len(sys.argv) > 1:
         if "https://mintmanga.live" in sys.argv[1] or "https://readmanga.io" in sys.argv[1] != -1:
